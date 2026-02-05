@@ -1,4 +1,4 @@
-# Buntralino Examples
+# Buntralino Examples (TypeScript)
 
 This directory contains practical examples of Buntralino integration patterns.
 
@@ -35,9 +35,11 @@ Secure authentication with session management:
 ## Usage Patterns
 
 ### Pattern 1: Explicit Data Fetching
-```js
+```ts
+type GetDataResponse = { ok: true; data: unknown } | { ok: false; error: string };
+
 async function refreshData() {
-  const result = await buntralino.run('getData', {});
+  const result = (await buntralino.run('getData', {})) as GetDataResponse;
   if (result.ok) {
     updateUI(result.data);
   }
@@ -45,20 +47,25 @@ async function refreshData() {
 ```
 
 ### Pattern 2: Event-Driven Updates
-```js
+```ts
 Neutralino.events.on('dataUpdated', async () => {
   await refreshData();
 });
 ```
 
 ### Pattern 3: Error Handling
-```js
-const response = await Promise.race([
+```ts
+type MethodResponse =
+  | { ok: true; data: unknown }
+  | { ok: false; error: string }
+  | { timeout: true };
+
+const response = (await Promise.race([
   buntralino.run('method', payload),
   new Promise((resolve) => setTimeout(() => resolve({ timeout: true }), 30000))
-]);
+])) as MethodResponse;
 
-if (response.timeout) {
+if ('timeout' in response) {
   handleTimeout();
 } else if (response.ok) {
   handleSuccess(response.data);
@@ -68,9 +75,13 @@ if (response.timeout) {
 ```
 
 ### Pattern 4: Input Validation
-```js
-buntralino.registerMethod('process', async (payload) => {
-  if (!payload.data || typeof payload.data !== 'string') {
+```ts
+type ProcessOk = { ok: true; result: string };
+type ProcessFail = { ok: false; error: string };
+type ProcessResponse = ProcessOk | ProcessFail;
+
+buntralino.registerMethod('process', async (payload): Promise<ProcessResponse> => {
+  if (!payload?.data || typeof payload.data !== 'string') {
     return { ok: false, error: 'Invalid input' };
   }
 
@@ -82,9 +93,9 @@ buntralino.registerMethod('process', async (payload) => {
 ## Running Examples
 
 1. Copy the example file to your project
-2. Install dependencies: `bun install buntralino buntralino-client`
-3. Run the backend: `bun run backend.js`
-4. Run the frontend: `bun run frontend.js`
+2. Install dependencies: bun install buntralino buntralino-client
+3. Run the backend: bun run backend.js
+4. Run the frontend: bun run frontend.js
 
 ## Integration Checklist
 

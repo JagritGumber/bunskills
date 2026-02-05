@@ -1,7 +1,7 @@
-# Error Handling Guide
+# Error Handling Guide (TypeScript)
 
 ## Connection Errors
-```js
+```ts
 try {
   await buntralino.ready;
 } catch (error) {
@@ -13,7 +13,7 @@ try {
 ```
 
 ## Method Not Found
-```js
+```ts
 try {
   await buntralino.run('unknownMethod', {});
 } catch (error) {
@@ -25,7 +25,7 @@ try {
 ```
 
 ## Timeout Protection
-```js
+```ts
 const TIMEOUT = Symbol('timeout');
 const response = await Promise.race([
   buntralino.run('method', payload),
@@ -38,8 +38,12 @@ if (response === TIMEOUT) {
 ```
 
 ## Backend Error Responses
-```js
-buntralino.registerMethod('process', async (payload) => {
+```ts
+type ProcessOk = { ok: true; result: string };
+type ProcessFail = { ok: false; error: string };
+type ProcessResponse = ProcessOk | ProcessFail;
+
+buntralino.registerMethod('process', async (payload): Promise<ProcessResponse> => {
   try {
     const result = await processData(payload);
     return { ok: true, result };
@@ -49,8 +53,8 @@ buntralino.registerMethod('process', async (payload) => {
 });
 ```
 
-```js
-const response = await buntralino.run('process', data);
+```ts
+const response = (await buntralino.run('process', data)) as ProcessResponse;
 if (!response.ok) {
   reportFailure(response.error);
 }

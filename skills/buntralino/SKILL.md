@@ -1,134 +1,109 @@
 ---
 name: buntralino
-description: Comprehensive Buntralino integration for cross-platform desktop applications using Bun backend and Neutralino frontend. Use when building desktop apps that need native Bun backend capabilities with web-based UI, including method registration, event handling, async communication patterns, and proper state management.
+description: Comprehensive Buntralino integration for cross-platform desktop apps using Bun main process and Neutralino windows. Use for Buntralino architecture, CLI usage, Bun API window management, client API calls, method registration, event broadcasting, troubleshooting, and Neutralino-focused UI integration with JavaScript and TypeScript references.
 ---
 
 # Buntralino Integration Guide
 
-Buntralino enables desktop applications with Bun backend processing power and Neutralino web-based frontend. This skill provides complete integration patterns for client-server communication, method registration, event handling, and state management.
+Buntralino uses a Bun main process with Neutralino windows for UI, connected through WebSockets. Use this skill when building or diagnosing Buntralino apps that combine Bun backend logic with Neutralino frontend code.
 
 ## Quick Start
 
-### Client-Side Setup (Neutralino Frontend)
-```typescript
-import * as buntralino from 'buntralino-client';
-
-// Wait for connection to Bun backend
-await buntralino.ready;
-
-// Call backend methods
-const result = await buntralino.run('myMethod', { data: 'hello' });
-console.log(result);
-```
-
-### Server-Side Setup (Bun Backend)
-```typescript
+### Bun Side
+```js
 import * as buntralino from 'buntralino';
 
-// Register methods for frontend to call
-buntralino.registerMethod('myMethod', async (payload) => {
-  console.log('Received:', payload);
-  return { success: true, processed: payload.data.toUpperCase() };
+buntralino.registerMethod('sayHello', async (payload) => {
+  const name = payload?.name ?? 'world';
+  return { message: `Hello, ${name}!` };
+});
+
+await buntralino.create('/', {
+  name: 'main',
+  title: 'My App',
+  width: 800,
+  height: 600,
+  center: true
 });
 ```
 
-## Core Patterns
+### Neutralino Window
+```js
+import * as buntralino from 'buntralino-client';
 
-### Async Method Communication
-```typescript
-// Frontend
-const response = await buntralino.run('processData', { input: 'data' });
-if (response.success) {
-  console.log('Processed:', response.result);
-}
+await buntralino.ready;
+const response = await buntralino.run('sayHello', { name: 'Ada' });
+displayMessage(response.message);
+```
 
-// Backend
+## Communication Patterns
+
+### Method Calls With Result Contracts
+```js
+import * as buntralino from 'buntralino';
+
 buntralino.registerMethod('processData', async (payload) => {
   try {
     const result = await heavyProcessing(payload.input);
-    return { success: true, result };
+    return { ok: true, result };
   } catch (error) {
-    return { success: false, error: error.message };
+    return { ok: false, error: String(error) };
   }
 });
 ```
 
-### Event Broadcasting
-```typescript
-// Backend broadcasts
-buntralino.broadcast('dataUpdated', { timestamp: Date.now() });
+```js
+import * as buntralino from 'buntralino-client';
 
-// Frontend listens
+await buntralino.ready;
+const response = await buntralino.run('processData', { input: 'data' });
+if (response.ok) {
+  updateUI(response.result);
+} else {
+  showError(response.error);
+}
+```
+
+### Event Broadcasting
+```js
+import * as buntralino from 'buntralino';
+
+buntralino.broadcast('dataUpdated', { timestamp: Date.now() });
+```
+
+```js
 Neutralino.events.on('dataUpdated', (event) => {
-  console.log('Data updated:', event.detail);
   updateUI(event.detail);
 });
 ```
 
-### State Management
-```typescript
-// Explicit data fetching (recommended)
-async function refreshData() {
-  const result = await buntralino.run('getCurrentData', {});
-  if (result.success) {
-    updateUI(result.data);
-  }
-}
+### Multi-Window Routing
+```js
+import * as buntralino from 'buntralino';
 
-// Call on mount and when needed
-useEffect(() => {
-  refreshData();
-}, []);
+await buntralino.create('/settings', { name: 'settings', width: 640, height: 480 });
+await buntralino.sendEvent('settings', 'settingsLoaded', { ready: true });
 ```
 
-## Error Handling
+## Neutralino Integration Notes
 
-```typescript
-// Add timeout protection
-const TIMEOUT = Symbol('timeout');
-const response = await Promise.race([
-  buntralino.run('longRunningTask', { data }),
-  new Promise(resolve => setTimeout(() => resolve(TIMEOUT), 30000))
-]);
-
-if (response === TIMEOUT) {
-  console.error('Request timed out');
-} else if (response.success) {
-  handleSuccess(response.result);
-} else {
-  handleError(response.error);
-}
-```
-
-## Security
-
-### Input Validation
-```typescript
-buntralino.registerMethod('processFile', async (payload) => {
-  const { filePath } = payload;
-  
-  // Validate and sanitize
-  if (!filePath || typeof filePath !== 'string') {
-    return { success: false, error: 'Invalid file path' };
-  }
-  
-  const sanitizedPath = path.normalize(filePath).replace(/^(\.\.[\/\\])+/, '');
-  
-  // Process with validated path
-  const result = await processFile(sanitizedPath);
-  return { success: true, result };
-});
-```
+- Ensure required Neutralino namespaces and methods are allowlisted in neutralino.config.json for your app.
+- If you intentionally create windows with Neutralino.window.create, call buntralino.disableBunCheck in the window after importing buntralino-client.
 
 ## References
 
-- [Client API Reference](references/client-api.md) - Complete client-side API documentation
-- [Server API Reference](references/server-api.md) - Backend method registration patterns
-- [Examples](references/examples.md) - Working implementation examples
-- [Error Handling](references/error-handling.md) - Comprehensive error strategies
+JavaScript references use the default filenames. TypeScript references use the same names with a -types suffix.
 
-## Integration Checklist
-
-1. **Backend**: Import buntralino, register methods, add validation
-2. **Frontend**: Import buntralino-client, wait for ready, set up listeners
-3. **Communication**: Use explicit fetching, implement timeouts, handle events
+- [Architecture](references/architecture.md)
+- [CLI Usage](references/cli.md)
+- [Programmatic CLI](references/cli-api.md)
+- [Programmatic CLI (TypeScript)](references/cli-api-types.md)
+- [Bun API](references/bun-api.md)
+- [Bun API (TypeScript)](references/bun-api-types.md)
+- [Client API](references/client-api.md)
+- [Client API (TypeScript)](references/client-api-types.md)
+- [Troubleshooting Linux](references/troubleshoot-linux.md)
+- [Examples](references/examples.md)
+- [Error Handling](references/error-handling.md)
+- [Examples (TypeScript)](references/examples-types.md)
+- [Error Handling (TypeScript)](references/error-handling-types.md)
