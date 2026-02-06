@@ -7,6 +7,8 @@ description: Bun runtime, bundler, and test runner references with JavaScript an
 
 Use this skill for Bun runtime usage, bundler workflows, and test runner behavior. References are organized by area and include JavaScript and TypeScript variants.
 
+Files suffixed with -types are TypeScript references for the same document.
+
 ## Sections
 
 - Runtime references live in runtime/.
@@ -14,6 +16,8 @@ Use this skill for Bun runtime usage, bundler workflows, and test runner behavio
 - Test runner references live in test-runner/.
 
 ## Runtime References
+
+### Runtime Core
 
 - [Runtime](runtime/runtime.md)
 - [Runtime (TypeScript)](runtime/runtime-types.md)
@@ -23,6 +27,9 @@ Use this skill for Bun runtime usage, bundler workflows, and test runner behavio
 - [Debugger (TypeScript)](runtime/debugger-types.md)
 - [bunfig.toml](runtime/bunfig.md)
 - [bunfig.toml (TypeScript)](runtime/bunfig-types.md)
+
+### File and Module System
+
 - [File Types](runtime/file-types.md)
 - [File Types (TypeScript)](runtime/file-types-types.md)
 - [Module Resolution](runtime/module-resolution.md)
@@ -35,6 +42,9 @@ Use this skill for Bun runtime usage, bundler workflows, and test runner behavio
 - [Plugins (TypeScript)](runtime/plugins-types.md)
 - [File System Router](runtime/file-system-router.md)
 - [File System Router (TypeScript)](runtime/file-system-router-types.md)
+
+### HTTP Server
+
 - [HTTP Server](runtime/http-server.md)
 - [HTTP Server (TypeScript)](runtime/http-server-types.md)
 - [HTTP Routing](runtime/http-routing.md)

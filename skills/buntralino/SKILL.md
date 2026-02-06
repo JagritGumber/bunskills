@@ -7,6 +7,18 @@ description: Comprehensive Buntralino integration for cross-platform desktop app
 
 Buntralino uses a Bun main process with Neutralino windows for UI, connected through WebSockets. Use this skill when building or diagnosing Buntralino apps that combine Bun backend logic with Neutralino frontend code.
 
+## When to Use
+
+- Building Buntralino apps that bridge Bun backend logic with Neutralino windows
+- Wiring client-to-server method calls, events, and multi-window routing
+- Troubleshooting connection, runtime, or platform-specific issues
+
+## What This Skill Covers
+
+- Buntralino architecture, CLI usage, and build/run workflows
+- Bun API window management and server-side method registration
+- Client API usage for method calls, events, and window lifecycle
+
 ## Quick Start
 
 ### Bun Side
@@ -90,6 +102,13 @@ await buntralino.sendEvent('settings', 'settingsLoaded', { ready: true });
 - Ensure required Neutralino namespaces and methods are allowlisted in neutralino.config.json for your app.
 - If you intentionally create windows with Neutralino.window.create, call buntralino.disableBunCheck in the window after importing buntralino-client.
 
+## Example Scripts
+
+- [Basic Integration](scripts/basic-integration.js)
+- [File Processing](scripts/file-processing.js)
+- [Real-time Dashboard](scripts/realtime-dashboard.js)
+- [Authentication](scripts/authentication.js)
+
 ## References
 
 JavaScript references use the default filenames. TypeScript references use the same names with a -types suffix.
@@ -100,6 +119,7 @@ JavaScript references use the default filenames. TypeScript references use the s
 - [Programmatic CLI (TypeScript)](references/cli-api-types.md)
 - [Bun API](references/bun-api.md)
 - [Bun API (TypeScript)](references/bun-api-types.md)
+- [Server API](references/server-api.md)
 - [Client API](references/client-api.md)
 - [Client API (TypeScript)](references/client-api-types.md)
 - [Troubleshooting Linux](references/troubleshoot-linux.md)
